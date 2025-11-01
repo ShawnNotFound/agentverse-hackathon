@@ -4,7 +4,7 @@ import json
 from google import genai
 
 # Text agent entrypoint and function. Reads GENAI_API_KEY from environment.
-API_KEY = os.environ.get("GENAI_API_KEY") or "AIzaSyBZ7LA5XV7kdbJLvLtNswCMirlxdo4l6w0"
+API_KEY = os.environ.get("GENAI_API_KEY") or "AIzaSyBuL7i9DR602P2PYE65ZbesoD0nj-fAKXM"
 
 def generate_text(prompt: str) -> str:
     """Generate text using GenAI and persist to `text_agent_output.json`.
