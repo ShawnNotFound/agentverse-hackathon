@@ -215,15 +215,32 @@ with col2:
 	if st.button("Send") and user_input:
 		st.session_state.messages.append({"role": "user", "text": user_input})
 
+		# Prefer calling the text agent in-process (gives clearer errors). If that
+		# fails (missing deps or import errors), fall back to running it as a
+		# subprocess and capture output.
+		assistant_text = None
 		try:
-			subprocess.run([sys.executable, str(AGENTS_TEXT_AGENT), user_input], check=True)
-			if OUTPUT_JSON.exists():
-				data = json.loads(OUTPUT_JSON.read_text(encoding="utf-8"))
-				assistant_text = data.get("text_output", "")
-			else:
-				assistant_text = "(no response, text_agent did not produce output)"
+			# import dynamically so changes to the agent are picked up without
+			# restarting the Streamlit process.
+			import importlib
+			from agents import text_agent as _ta
+			importlib.reload(_ta)
+			assistant_text = _ta.generate_text(user_input)
 		except Exception as exc:
-			assistant_text = f"Error running text agent: {exc}"
+			# fallback to subprocess and capture output for diagnostics
+			try:
+				proc = subprocess.run([sys.executable, str(AGENTS_TEXT_AGENT), user_input], capture_output=True, text=True)
+				if proc.returncode == 0:
+					# try read json output first
+					if OUTPUT_JSON.exists():
+						data = json.loads(OUTPUT_JSON.read_text(encoding="utf-8"))
+						assistant_text = data.get("text_output", proc.stdout.strip())
+					else:
+						assistant_text = proc.stdout.strip() or proc.stderr.strip() or f"Subprocess exited with {proc.returncode}"
+				else:
+					assistant_text = f"Error running text agent (subprocess exit {proc.returncode}): {proc.stderr.strip() or proc.stdout.strip()}"
+			except Exception as exc2:
+				assistant_text = f"Error running text agent: {exc} ; fallback failed: {exc2}"
 
 		st.session_state.messages.append({"role": "assistant", "text": assistant_text})
 		_rerun_compat()
