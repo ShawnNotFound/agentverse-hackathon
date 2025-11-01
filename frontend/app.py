@@ -25,8 +25,29 @@ SCOPES = [
 
 
 def load_client_config():
+	# First, allow configuration via environment variables so secrets are not
+	# stored in the repository. Set these in your shell or use a secret manager:
+	#   GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REDIRECT_URI
+	client_id = os.environ.get("GOOGLE_OAUTH_CLIENT_ID") or os.environ.get("CLIENT_ID")
+	client_secret = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET") or os.environ.get("CLIENT_SECRET")
+	redirect_uri = os.environ.get("GOOGLE_OAUTH_REDIRECT_URI") or "http://localhost:8501/"
+	if client_id and client_secret:
+		return {
+			"web": {
+				"client_id": client_id,
+				"client_secret": client_secret,
+				"redirect_uris": [redirect_uri],
+				"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+				"token_uri": "https://oauth2.googleapis.com/token",
+			}
+		}
+
+	# Fallback to reading the client_secrets.json file (for compatibility).
 	if CLIENT_SECRETS_FILE.exists():
-		return json.loads(CLIENT_SECRETS_FILE.read_text(encoding="utf-8"))
+		try:
+			return json.loads(CLIENT_SECRETS_FILE.read_text(encoding="utf-8"))
+		except Exception:
+			return None
 	return None
 
 
