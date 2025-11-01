@@ -17,7 +17,11 @@ OUTPUT_JSON = Path("text_agent_output.json")
 
 CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
 
-SCOPES = ["openid", "email", "profile"]
+SCOPES = [
+	"openid",
+	"https://www.googleapis.com/auth/userinfo.email",
+	"https://www.googleapis.com/auth/userinfo.profile",
+]
 
 
 def load_client_config():
@@ -34,6 +38,10 @@ def login_flow():
 
 	flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri="http://localhost:8501/")
 	auth_url, state = flow.authorization_url(prompt="consent", include_granted_scopes="true", access_type="offline")
+	try:
+		st.session_state["oauth_state"] = state
+	except Exception:
+		pass
 	return auth_url, state
 
 
@@ -51,8 +59,20 @@ st.set_page_config(page_title="Agentverse Chat", layout="wide")
 
 st.title("Agentverse — Chat with Text Agent")
 
+
+def _rerun_compat():
+	"""Try to programmatically rerun the Streamlit script in a version-compatible way."""
+	try:
+		st.rerun()
+	except AttributeError:
+		try:
+			st.experimental_rerun()
+		except Exception:
+			st.warning("Please refresh the page manually.")
+
+
 # Authentication section
-params = st.experimental_get_query_params()
+params = st.query_params
 
 if "user" not in st.session_state:
 	st.session_state.user = None
@@ -60,34 +80,91 @@ if "user" not in st.session_state:
 if "messages" not in st.session_state:
 	st.session_state.messages = []
 
-if params.get("code"):
-	code = params.get("code")[0]
-	state = params.get("state", [""])[0]
-	try:
-		user = exchange_code_for_user(code, state)
-		st.session_state.user = user
-		# Clean query params by reloading without params
-		st.experimental_set_query_params()
-		st.success(f"Logged in as {user.get('name')}")
-	except Exception as exc:
-		st.error(f"Login failed: {exc}")
+# Handle OAuth callback
+if "code" in params:
+	code = params["code"]
+	returned_state = params.get("state", "")
+	stored_state = st.session_state.get("oauth_state")
+	
+	if stored_state and stored_state != returned_state:
+		st.error("Login failed: OAuth state mismatch. Please try signing in again.")
+		st.session_state.pop("oauth_state", None)
+	else:
+		try:
+			user = exchange_code_for_user(code, returned_state)
+			st.session_state.user = user
+			st.session_state.pop("oauth_state", None)
+			
+			# Clear query params - FIXED VERSION
+			st.query_params.clear()
+			st.success(f"Logged in as {user.get('name')}")
+			_rerun_compat()
+			
+		except Exception as exc:
+			msg = str(exc)
+			if "invalid_grant" in msg.lower() or "malformed" in msg.lower():
+				st.error("Login failed: received an invalid or malformed auth code.")
+				
+				with st.expander("Debug Information"):
+					try:
+						code_preview = (code[:8] + "...") if code else "(empty)"
+						st.info(f"Code preview: {code_preview} (length={len(code) if code else 0})")
+					except:
+						pass
+					
+					try:
+						client_cfg = load_client_config()
+						if client_cfg is None:
+							st.info("client_secrets.json missing or unreadable")
+						else:
+							st.info(f"client_secrets contains keys: {list(client_cfg.keys())}")
+							web = client_cfg.get("web") or client_cfg.get("installed")
+							if web:
+								st.info(f"client_id: {web.get('client_id')}")
+								uris = web.get('redirect_uris') or web.get('redirect_uri') or []
+								st.info(f"configured redirect_uris: {uris}")
+					except:
+						pass
+				
+				st.markdown("""
+				**Try these steps:**
+				1. Close all other tabs with this app
+				2. Use an incognito/private window
+				3. Verify redirect URI in Google Cloud Console is exactly `http://localhost:8501/`
+				4. Remove app access from your Google Account and retry
+				5. Check that your `client_secrets.json` is valid
+				""")
+				
+				st.session_state.pop("oauth_state", None)
+				
+				if st.button("Clear and Retry Login"):
+					st.query_params.clear()
+					st.session_state.pop("oauth_state", None)
+					_rerun_compat()
+			else:
+				st.error(f"Login failed: {exc}")
+				if st.button("Retry login"):
+					st.query_params.clear()
+					st.session_state.pop("oauth_state", None)
+					_rerun_compat()
 
 col1, col2 = st.columns([1, 3])
 
 with col1:
 	st.header("Account")
 	if st.session_state.user:
-		st.write(f"**Name:** {st.session_state.user.get('name')}  ")
-		st.write(f"**Email:** {st.session_state.user.get('email')}  ")
+		st.write(f"**Name:** {st.session_state.user.get('name')}")
+		st.write(f"**Email:** {st.session_state.user.get('email')}")
 		if st.button("Logout"):
 			st.session_state.user = None
-			st.experimental_rerun()
+			st.query_params.clear()
+			_rerun_compat()
 	else:
 		st.write("You are not logged in.")
 		auth = login_flow()
 		if auth:
 			auth_url, state = auth
-			st.markdown(f'<a href="{auth_url}"><button>Login with Google</button></a>', unsafe_allow_html=True)
+			st.link_button("Login with Google", auth_url)
 		else:
 			st.info("Place your Google OAuth client_secrets.json at `frontend/agentverse-streamlit-app/client_secrets.json`.")
 
@@ -107,10 +184,8 @@ with col2:
 
 	user_input = st.text_input("Message", key="user_input")
 	if st.button("Send") and user_input:
-		# append user message
 		st.session_state.messages.append({"role": "user", "text": user_input})
 
-		# call text agent script (uses GENAI_API_KEY env var)
 		try:
 			subprocess.run([sys.executable, str(AGENTS_TEXT_AGENT), user_input], check=True)
 			if OUTPUT_JSON.exists():
@@ -122,12 +197,9 @@ with col2:
 			assistant_text = f"Error running text agent: {exc}"
 
 		st.session_state.messages.append({"role": "assistant", "text": assistant_text})
-		# re-render
-		st.experimental_rerun()
+		_rerun_compat()
 
-	# small note about identity tracking
 	if st.session_state.user:
 		st.caption(f"Requests are associated with {st.session_state.user.get('email')}")
 	else:
 		st.caption("You can log in with Google to associate messages with your identity.")
-
