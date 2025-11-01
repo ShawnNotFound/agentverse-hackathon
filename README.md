@@ -30,7 +30,3 @@ Notes and assumptions
 
 Security
 - Never commit `client_secrets.json` or API keys to source control. Keep them local or in a secure secret manager.
-
-If you want, I can:
-- Add a client-side Google Identity button instead of server-side OAuth.
-- Improve the chat UI with nicer bubbles and history persistence.
