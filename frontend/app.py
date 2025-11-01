@@ -17,7 +17,13 @@ OUTPUT_JSON = Path("text_agent_output.json")
 
 CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
 
-SCOPES = ["openid", "email", "profile"]
+# SCOPES = ["openid", "email", "profile"]
+SCOPES = [
+	"openid",
+	# Use the explicit userinfo scopes Google returns for profile/email
+	"https://www.googleapis.com/auth/userinfo.email",
+	"https://www.googleapis.com/auth/userinfo.profile",
+]
 
 
 def load_client_config():
@@ -34,6 +40,13 @@ def login_flow():
 
 	flow = Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri="http://localhost:8501/")
 	auth_url, state = flow.authorization_url(prompt="consent", include_granted_scopes="true", access_type="offline")
+	# Persist the state so we can validate it when Google redirects back.
+	# Streamlit session_state survives until the user closes the browser tab.
+	try:
+		st.session_state["oauth_state"] = state
+	except Exception:
+		# If session_state isn't available for some reason, continue without storing.
+		pass
 	return auth_url, state
 
 
@@ -51,8 +64,43 @@ st.set_page_config(page_title="Agentverse Chat", layout="wide")
 
 st.title("Agentverse — Chat with Text Agent")
 
+
+def _rerun_compat():
+	"""Try to programmatically rerun the Streamlit script in a version-compatible way.
+
+	Tries in order:
+	- call st.experimental_rerun() if present
+	- raise Streamlit's internal RerunException from known import paths
+	- if none available, instruct the user to refresh manually
+	"""
+	# Preferred API
+	if hasattr(st, "experimental_rerun"):
+		try:
+			st.experimental_rerun()
+			return
+		except Exception:
+			# fall through to internal approach
+			pass
+
+	# Fallback: attempt to import and raise the internal RerunException
+	for import_path in (
+		"streamlit.runtime.scriptrunner.script_runner",
+		"streamlit.report_thread",
+	):
+		try:
+			mod = __import__(import_path, fromlist=["RerunException"]) 
+			RerunException = getattr(mod, "RerunException")
+			raise RerunException()
+		except Exception:
+			continue
+
+	# Last resort: tell the user to refresh
+	st.warning("Unable to programmatically rerun Streamlit for this environment — please refresh the page manually.")
+
 # Authentication section
-params = st.experimental_get_query_params()
+# Use the stable `st.query_params` property instead of the deprecated
+# `st.experimental_get_query_params()` which was removed after 2024-04-11.
+params = st.query_params
 
 if "user" not in st.session_state:
 	st.session_state.user = None
@@ -62,15 +110,58 @@ if "messages" not in st.session_state:
 
 if params.get("code"):
 	code = params.get("code")[0]
-	state = params.get("state", [""])[0]
-	try:
-		user = exchange_code_for_user(code, state)
-		st.session_state.user = user
-		# Clean query params by reloading without params
-		st.experimental_set_query_params()
-		st.success(f"Logged in as {user.get('name')}")
-	except Exception as exc:
-		st.error(f"Login failed: {exc}")
+	returned_state = params.get("state", [""])[0]
+	# Validate state against stored session state (if present)
+	stored_state = st.session_state.get("oauth_state")
+	if stored_state and stored_state != returned_state:
+		st.error("Login failed: OAuth state mismatch. Please try signing in again.")
+		# clear stored state to force a fresh login next time
+		st.session_state.pop("oauth_state", None)
+	else:
+		try:
+			user = exchange_code_for_user(code, returned_state)
+			st.session_state.user = user
+			# clear stored oauth_state
+			st.session_state.pop("oauth_state", None)
+			# Clean query params by reloading without params
+			st.experimental_set_query_params()
+			st.success(f"Logged in as {user.get('name')}")
+		except Exception as exc:
+			# Provide a more actionable error message for common causes
+			msg = str(exc)
+			if "invalid_grant" in msg or "Malformed auth code" in msg:
+				st.error("Login failed: received an invalid or malformed auth code. Possible causes: you copied the code manually, the code was modified by the browser, or the code expired.")
+				# Show extra debug hints that are safe (no secrets): code length, state, client config shape
+				try:
+					code_preview = (code[:8] + "...") if code else "(empty)"
+					st.info(f"Code preview: {code_preview} (length={len(code) if code else 0})")
+				except Exception:
+					pass
+				try:
+					client_cfg = load_client_config()
+					if client_cfg is None:
+						st.info("client_secrets.json missing or unreadable")
+					else:
+						st.info(f"client_secrets contains keys: {list(client_cfg.keys())}")
+						web = client_cfg.get("web") or client_cfg.get("installed")
+						if web:
+							st.info(f"client_id: {web.get('client_id')}")
+							uris = web.get('redirect_uris') or web.get('redirect_uri') or []
+							st.info(f"configured redirect_uris: {uris}")
+				except Exception:
+					pass
+				st.write("Try these steps:\n- Close other tabs for this app and try again.\n- Use an incognito window.\n- Ensure the redirect URI in the Google Cloud Console is exactly `http://localhost:8501/` (including trailing slash).\n- If you've previously authorized the app, remove its access from your Google Account and retry.")
+				# Clear stored state to force a fresh login on next attempt
+				st.session_state.pop("oauth_state", None)
+				if st.button("Retry login"):
+					st.session_state.pop("oauth_state", None)
+					_rerun_compat()
+			else:
+				st.error(f"Login failed: {exc}")
+				# expose a retry option for other errors as well
+				if st.button("Retry login"):
+					st.session_state.pop("oauth_state", None)
+					_rerun_compat()
 
 col1, col2 = st.columns([1, 3])
 
@@ -81,13 +172,19 @@ with col1:
 		st.write(f"**Email:** {st.session_state.user.get('email')}  ")
 		if st.button("Logout"):
 			st.session_state.user = None
-			st.experimental_rerun()
+			# st.experimental_rerun()
+			_rerun_compat()
 	else:
 		st.write("You are not logged in.")
 		auth = login_flow()
 		if auth:
 			auth_url, state = auth
 			st.markdown(f'<a href="{auth_url}"><button>Login with Google</button></a>', unsafe_allow_html=True)
+			# Use a same-tab navigation button (onclick) so Streamlit session_state remains the
+			# same browser session. Opening the auth URL in a different tab can cause an
+			# OAuth state mismatch because Streamlit session_state is tab-scoped.
+			##btn_html = f"<button onclick=\"window.location.href='{auth_url}'\">Login with Google</button>"
+			##st.markdown(btn_html, unsafe_allow_html=True)
 		else:
 			st.info("Place your Google OAuth client_secrets.json at `frontend/agentverse-streamlit-app/client_secrets.json`.")
 
@@ -123,7 +220,7 @@ with col2:
 
 		st.session_state.messages.append({"role": "assistant", "text": assistant_text})
 		# re-render
-		st.experimental_rerun()
+		_rerun_compat()
 
 	# small note about identity tracking
 	if st.session_state.user:
