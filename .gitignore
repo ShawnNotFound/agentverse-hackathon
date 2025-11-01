@@ -1,0 +1,4 @@
+## Ignore local OAuth client secrets and generated outputs
+frontend/agentverse-streamlit-app/client_secrets.json
+frontend/agentverse-streamlit-app/client_secret_1050515079869-a70t0iliuss50871rd837ivehoesm308.apps.googleusercontent.com.json
+text_agent_output.json
