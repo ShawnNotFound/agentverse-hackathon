@@ -14,6 +14,7 @@ from google.auth.transport import requests as grequests
 HERE = Path(__file__).parent
 AGENTS_TEXT_AGENT = Path(__file__).parent.joinpath("..", "agents", "text_agent.py").resolve()
 OUTPUT_JSON = Path("text_agent_output.json")
+AUDIO_AGENT_PATH = Path(__file__).parent.joinpath("..", "agents", "audio_agent.py").resolve()
 
 CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
 
@@ -152,6 +153,13 @@ col1, col2 = st.columns([1, 3])
 
 with col1:
 	st.header("Account")
+	if st.button("Start Audio Transcription"):
+		try:
+			subprocess.run([sys.executable, str(AUDIO_AGENT_PATH)], check=True)
+			st.success("Audio transcription started.")
+		except Exception as exc:
+			st.error(f"Failed to start audio transcription: {exc}")
+
 	if st.session_state.user:
 		st.write(f"**Name:** {st.session_state.user.get('name')}")
 		st.write(f"**Email:** {st.session_state.user.get('email')}")
