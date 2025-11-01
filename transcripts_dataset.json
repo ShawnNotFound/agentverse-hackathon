@@ -1,0 +1,14 @@
+[
+  {
+    "speaker": "0",
+    "transcript": "Hello, hello hello.",
+    "start_time": 1.006,
+    "end_time": 3.146
+  },
+  {
+    "speaker": "1",
+    "transcript": "I'm happy. E is working.",
+    "start_time": 3.806,
+    "end_time": 6.026
+  }
+]

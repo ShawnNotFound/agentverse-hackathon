@@ -1,3 +1,6 @@
 flask
 django
 requests
+streamlit
+google-auth
+google-auth-oauthlib
