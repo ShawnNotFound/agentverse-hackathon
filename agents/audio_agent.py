@@ -53,9 +53,7 @@ def add_dataset_entry(result, alternative, transcript_text):
     speaker = resolve_speaker(result, alternative)
     entry = {
         "speaker": speaker,
-        "transcript": transcript_text,
-        "start_time": getattr(result, "start_time", None),
-        "end_time": getattr(result, "end_time", None),
+        "transcript": transcript_text
     }
     TRANSCRIPT_DATA.append(entry)
     persist_dataset()
