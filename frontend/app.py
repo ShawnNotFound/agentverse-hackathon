@@ -232,4 +232,3 @@ with col2:
 		st.caption(f"Requests are associated with {st.session_state.user.get('email')}")
 	else:
 		st.caption("You can log in with Google to associate messages with your identity.")
-
