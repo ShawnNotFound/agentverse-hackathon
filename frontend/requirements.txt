@@ -1,0 +1,8 @@
+streamlit
+neo4j
+plotly
+pyvis
+networkx
+python-dotenv
+pandas
+audio_recorder_streamlit

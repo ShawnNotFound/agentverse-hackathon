@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+import importlib.util
 
 import streamlit as st
 
@@ -14,7 +15,8 @@ from google.auth.transport import requests as grequests
 HERE = Path(__file__).parent
 AGENTS_TEXT_AGENT = Path(__file__).parent.joinpath("..", "agents", "text_agent.py").resolve()
 OUTPUT_JSON = Path("text_agent_output.json")
-AUDIO_AGENT_PATH = Path(__file__).parent.joinpath("..", "agents", "audio_agent.py").resolve()
+GRAPH_VIEWER_PATH = HERE.joinpath("agentverse-streamlit-app", "pages", "graph_viewer.py")
+AUDIO_VIEWER_MODULE_PATH = HERE.joinpath("agentverse-streamlit-app", "pages", "audio_viewer.py")
 
 CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
 
@@ -77,10 +79,19 @@ def exchange_code_for_user(code: str, state: str):
 	return {"name": idinfo.get("name"), "email": idinfo.get("email")}
 
 
-st.set_page_config(page_title="Agentverse Chat", layout="wide")
+def load_graph_viewer_module():
+	spec = importlib.util.spec_from_file_location("graph_viewer", str(GRAPH_VIEWER_PATH))
+	graph_viewer = importlib.util.module_from_spec(spec)
+	spec.loader.exec_module(graph_viewer)
+	return graph_viewer
 
-st.title("Agentverse — Chat with Text Agent")
+def load_audio_viewer_module():
+	spec = importlib.util.spec_from_file_location("audio_viewer", str(AUDIO_VIEWER_MODULE_PATH))
+	audio_viewer = importlib.util.module_from_spec(spec)
+	spec.loader.exec_module(audio_viewer)
+	return audio_viewer
 
+st.set_page_config(page_title="Agentverse", layout="wide")
 
 def _rerun_compat():
 	"""Try to programmatically rerun the Streamlit script in a version-compatible way."""
@@ -92,6 +103,9 @@ def _rerun_compat():
 		except Exception:
 			st.warning("Please refresh the page manually.")
 
+# Initialize active page in session state
+if "active_page" not in st.session_state:
+	st.session_state.active_page = "Chat"
 
 # Authentication section
 params = st.query_params
@@ -102,7 +116,7 @@ if "user" not in st.session_state:
 if "messages" not in st.session_state:
 	st.session_state.messages = []
 
-# Handle OAuth callback
+# Comment out OAuth callback handling for testing if required 
 if "code" in params:
 	code = params["code"]
 	returned_state = params.get("state", "")
@@ -170,44 +184,71 @@ if "code" in params:
 					st.session_state.pop("oauth_state", None)
 					_rerun_compat()
 
-col1, col2 = st.columns([1, 3])
-
-with col1:
-	st.header("Account")
-	if st.button("Start Audio Transcription"):
-		try:
-			subprocess.run([sys.executable, str(AUDIO_AGENT_PATH)], check=True)
-			st.success("Audio transcription started.")
-		except Exception as exc:
-			st.error(f"Failed to start audio transcription: {exc}")
-
-	if st.session_state.user:
+# Sidebar navigation (only show if logged in)
+if st.session_state.user:
+	with st.sidebar:
+		st.header("Navigation")
+		if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state.active_page == "Chat" else "secondary"):
+			st.session_state.active_page = "Chat"
+			_rerun_compat()
+		
+		if st.button("🎤 Audio Agent", use_container_width=True, type="primary" if st.session_state.active_page == "Audio" else "secondary"):
+			st.session_state.active_page = "Audio"
+			_rerun_compat()
+		
+		if st.button("🕸️ Knowledge Graph", use_container_width=True, type="primary" if st.session_state.active_page == "Graph" else "secondary"):
+			st.session_state.active_page = "Graph"
+			_rerun_compat()
+		
+		st.divider()
+		st.subheader("Account")
 		st.write(f"**Name:** {st.session_state.user.get('name')}")
 		st.write(f"**Email:** {st.session_state.user.get('email')}")
-		if st.button("Logout"):
+		if st.button("Logout", use_container_width=True):
 			st.session_state.user = None
+			st.session_state.active_page = "Chat"
 			st.query_params.clear()
 			_rerun_compat()
-	else:
-		st.write("You are not logged in.")
+
+# Main content area
+if not st.session_state.user:
+	st.title("Agentverse — Chat with Text Agent")
+	col1, col2 = st.columns([1, 1])
+	with col1:
+		st.subheader("Please log in to continue")
 		auth = login_flow()
 		if auth:
 			auth_url, state = auth
 			st.link_button("Login with Google", auth_url)
 		else:
 			st.info("Place your Google OAuth client_secrets.json at `frontend/agentverse-streamlit-app/client_secrets.json`.")
-
-with col2:
-	st.header("Chat")
-
+elif st.session_state.active_page == "Chat":
+	st.title("💬 Chat with Text Agent")
+	
 	def render_messages():
 		for m in st.session_state.messages:
 			role = m.get("role")
 			text = m.get("text")
 			if role == "user":
-				st.markdown(f"<div style='background:#e6f2ff;padding:10px;border-radius:10px;margin:8px 0'>**You:** {text}</div>", unsafe_allow_html=True)
+				st.markdown(f"""
+				<div style='display: flex; justify-content: flex-end; margin: 8px 0;'>
+					<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+					color: white; padding: 12px 16px; border-radius: 18px; max-width: 70%; 
+					box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);'>
+					{text}
+					</div>
+				</div>
+				""", unsafe_allow_html=True)
 			else:
-				st.markdown(f"<div style='background:#f1f1f1;padding:10px;border-radius:10px;margin:8px 0'>**Assistant:** {text}</div>", unsafe_allow_html=True)
+				st.markdown(f"""
+				<div style='display: flex; justify-content: flex-start; margin: 8px 0;'>
+					<div style='background: #2d2d2d; color: white; padding: 12px 16px; 
+					border-radius: 18px; max-width: 70%; 
+					box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);'>
+					{text}
+					</div>
+				</div>
+				""", unsafe_allow_html=True)
 
 	render_messages()
 
@@ -215,17 +256,20 @@ with col2:
 	if st.button("Send") and user_input:
 		st.session_state.messages.append({"role": "user", "text": user_input})
 
-		# Prefer calling the text agent in-process (gives clearer errors). If that
-		# fails (missing deps or import errors), fall back to running it as a
-		# subprocess and capture output.
-		assistant_text = None
 		try:
-			# import dynamically so changes to the agent are picked up without
-			# restarting the Streamlit process.
-			import importlib
-			from agents import text_agent as _ta
-			importlib.reload(_ta)
-			assistant_text = _ta.generate_text(user_input)
+			result = subprocess.run(
+				[sys.executable, str(AGENTS_TEXT_AGENT), user_input], 
+				check=True,
+				capture_output=True,
+				text=True
+			)
+			if OUTPUT_JSON.exists():
+				data = json.loads(OUTPUT_JSON.read_text(encoding="utf-8"))
+				assistant_text = data.get("text_output", "")
+			else:
+				assistant_text = "(no response, text_agent did not produce output)"
+		except subprocess.CalledProcessError as exc:
+			assistant_text = f"Error running text agent:\n\nSTDOUT: {exc.stdout}\n\nSTDERR: {exc.stderr}"
 		except Exception as exc:
 			# fallback to subprocess and capture output for diagnostics
 			try:
@@ -245,7 +289,20 @@ with col2:
 		st.session_state.messages.append({"role": "assistant", "text": assistant_text})
 		_rerun_compat()
 
-	if st.session_state.user:
-		st.caption(f"Requests are associated with {st.session_state.user.get('email')}")
-	else:
-		st.caption("You can log in with Google to associate messages with your identity.")
+	st.caption(f"Requests are associated with {st.session_state.user.get('email')}")
+
+elif st.session_state.active_page == "Audio":
+	try:
+		audio_viewer = load_audio_viewer_module()
+		audio_viewer.main()
+	except Exception as e:
+		st.error(f"Error loading audio viewer: {e}")
+		st.info("Make sure `agentverse-streamlit-app/pages/audio_viewer.py` exists and contains a `main()` function.")
+
+elif st.session_state.active_page == "Graph":
+	try:
+		graph_viewer = load_graph_viewer_module()
+		graph_viewer.main()
+	except Exception as e:
+		st.error(f"Error loading graph viewer: {e}")
+		st.info("Make sure `pages/graph_viewer.py` exists and contains a `main()` function.")

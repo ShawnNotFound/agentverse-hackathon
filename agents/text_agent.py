@@ -2,6 +2,9 @@ import os
 import sys
 import json
 from google import genai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Text agent entrypoint and function. Reads GENAI_API_KEY from environment.
 API_KEY = os.getenv("GENAI_API_KEY") 
