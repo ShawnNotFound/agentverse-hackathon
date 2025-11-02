@@ -1,6 +1,12 @@
-# Agentverse Streamlit Chat
+# The Bridger C8 - An Agentic AI Solution to Cross Collaboration and Breaking Down Silos
 
-This repository includes a minimal Streamlit web UI that lets users log in with Google (OAuth 2.0), send messages to a text agent, and view the agent's response.
+AgentVerse Hackathon Track 1 - Reimagining the Workplace
+
+Incorporates a network of agents: 
+- text agent
+- speech agent
+- transcribe agent
+- allocation agent
 
 Key pieces
 - `frontend/app.py` - Streamlit app. Shows "Login with Google" button, chat UI, and forwards messages to `agents/text_agent.py`.
