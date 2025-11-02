@@ -130,5 +130,9 @@
   {
     "speaker": "1",
     "transcript": "I"
+  },
+  {
+    "speaker": "0",
+    "transcript": "Testing, testing."
   }
 ]

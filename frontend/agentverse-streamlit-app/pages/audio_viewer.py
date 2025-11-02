@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-AUDIO_AGENT_PATH = Path(__file__).parent.parent.parent.parent.joinpath("agents", "audio_agent.py").resolve()
+AUDIO_AGENT_PATH = Path(__file__).parent.parent.parent.parent.joinpath("agents/transcribe/", "audio_agent.py").resolve()
 OUTPUT_JSON = Path("transcripts_dataset.json")
 
 def kill_process_tree(pid):
