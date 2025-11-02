@@ -1,0 +1,3 @@
+agents/.env
+frontend/.env
+frontend/agentverse-streamlit-app/client_secrets.json
