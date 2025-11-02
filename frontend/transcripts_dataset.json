@@ -1,654 +1,134 @@
 [
   {
     "speaker": "0",
-    "transcript": "OK."
+    "transcript": "Tests man 23"
   },
   {
-    "speaker": "2",
-    "transcript": "Can you hear me"
+    "speaker": "0",
+    "transcript": "test 123 test 123, yeah, yeah, yeah."
   },
   {
     "speaker": "1",
-    "transcript": "Hey"
-  },
-  {
-    "speaker": "0",
-    "transcript": "Working"
-  },
-  {
-    "speaker": "0",
-    "transcript": "And"
-  },
-  {
-    "speaker": "0",
-    "transcript": "everything's OK."
-  },
-  {
-    "speaker": "1",
-    "transcript": "Oh, I forgot to create another branch. I committed to the front end bra."
-  },
-  {
-    "speaker": "3",
-    "transcript": "Oh yeah, it's fine. No worries. I'll just pull it."
-  },
-  {
-    "speaker": "0",
-    "transcript": "Mm."
-  },
-  {
-    "speaker": "0",
-    "transcript": "right"
-  },
-  {
-    "speaker": "0",
-    "transcript": "Um"
-  },
-  {
-    "speaker": "0",
-    "transcript": "I tried to push stuff to the"
-  },
-  {
-    "speaker": "1",
-    "transcript": "the repository, but I got rejected."
-  },
-  {
-    "speaker": "4",
-    "transcript": "Oh, yeah, cause it says I need you to make it. Oh yeah."
-  },
-  {
-    "speaker": "1",
-    "transcript": "Daniel."
-  },
-  {
-    "speaker": "1",
-    "transcript": "Pass the rooms, um, especially like cause the the buildings are closed down like, like you have to be out. So 90, so you don't, you probably still have a little bit of time, but don't stay after 9. Yeah, try to take with you and like do it out. OK. Thanks."
-  },
-  {
-    "speaker": "0",
-    "transcript": "OK"
-  },
-  {
-    "speaker": "1",
-    "transcript": "I'll"
-  },
-  {
-    "speaker": "0",
-    "transcript": "Oh."
-  },
-  {
-    "speaker": "1",
-    "transcript": "Hi, hello, hello, hi, hi."
-  },
-  {
-    "speaker": "0",
-    "transcript": "Good"
-  },
-  {
-    "speaker": "0",
-    "transcript": "um"
-  },
-  {
-    "speaker": "0",
-    "transcript": "I don't think it'll work."
-  },
-  {
-    "speaker": "0",
-    "transcript": "Um, so you probably officially assessing you."
-  },
-  {
-    "speaker": "0",
-    "transcript": "Hi, can you hear me? Hi."
-  },
-  {
-    "speaker": "0",
-    "transcript": "for your information for the points are up."
-  },
-  {
-    "speaker": "0",
-    "transcript": "And every company"
-  },
-  {
-    "speaker": "0",
-    "transcript": "OK you want want the, um,"
-  },
-  {
-    "speaker": "0",
-    "transcript": "runs."
-  },
-  {
-    "speaker": "0",
     "transcript": "I"
   },
   {
-    "speaker": "0",
-    "transcript": "So"
-  },
-  {
-    "speaker": "2",
-    "transcript": "Mhm."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Mm."
-  },
-  {
-    "speaker": "2",
-    "transcript": "we"
-  },
-  {
-    "speaker": "0",
-    "transcript": "Um, so"
-  },
-  {
-    "speaker": "0",
-    "transcript": "because"
-  },
-  {
-    "speaker": "2",
-    "transcript": "OK."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Can I?"
-  },
-  {
-    "speaker": "2",
-    "transcript": "Yeah, well, um."
-  },
-  {
-    "speaker": "2",
-    "transcript": "But do you want now on some tours I."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Well, you know,"
-  },
-  {
-    "speaker": "2",
-    "transcript": "Oh"
-  },
-  {
-    "speaker": "2",
+    "speaker": "1",
     "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Mhm"
-  },
-  {
-    "speaker": "2",
-    "transcript": "s"
-  },
-  {
-    "speaker": "2",
-    "transcript": "I sweat"
-  },
-  {
-    "speaker": "2",
-    "transcript": "I pop ups."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I mean he's"
-  },
-  {
-    "speaker": "2",
-    "transcript": "Yeah, um,"
-  },
-  {
-    "speaker": "2",
-    "transcript": "uh"
-  },
-  {
-    "speaker": "2",
-    "transcript": "It was using API to call the database or it was using something to call the API the new API to call the database."
-  },
-  {
-    "speaker": "4",
-    "transcript": "cause I, cause I see this thing in your."
-  },
-  {
-    "speaker": "4",
-    "transcript": "It's like, can I make it like speech agent use API target databases that how it works. Yeah, that's how it works. I think we don't need this one."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Um"
-  },
-  {
-    "speaker": "5",
-    "transcript": "Yeah, you can combine it into one, simplify, yeah."
-  },
-  {
-    "speaker": "2",
+    "speaker": "1",
     "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "It's uh, but I think this is gonna be sharp. Um, this you can just like once you are in here."
-  },
-  {
-    "speaker": "2",
-    "transcript": "And"
-  },
-  {
-    "speaker": "0",
-    "transcript": "we have more of the steps we do."
-  },
-  {
-    "speaker": "0",
-    "transcript": "please"
-  },
-  {
-    "speaker": "0",
-    "transcript": "is not password"
-  },
-  {
-    "speaker": "2",
-    "transcript": "There's a line connecting database and reba it's probably. Yeah, it's true if you cause your, so you can just draw one direct, uh, one day direct error from database to front end API call. Do we have a special for oh, you mean the database itself is stored as graph."
-  },
-  {
-    "speaker": "5",
-    "transcript": "All right."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Uh, no, it's just, uh, this is empty."
-  },
-  {
-    "speaker": "2",
-    "transcript": "coming off the."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Mhm"
-  },
-  {
-    "speaker": "2",
-    "transcript": "Yes."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Let's just end up"
-  },
-  {
-    "speaker": "2",
-    "transcript": "moss."
-  },
-  {
-    "speaker": "2",
-    "transcript": "change."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I don't think so."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Mhm."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I."
-  },
-  {
-    "speaker": "0",
-    "transcript": "It's just pretty set won't send the last one."
-  },
-  {
-    "speaker": "2",
+    "speaker": "1",
     "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "some."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I'm pretty sure that already."
-  },
-  {
-    "speaker": "2",
-    "transcript": "sure"
-  },
-  {
-    "speaker": "2",
-    "transcript": "What is the lady so I can get this."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Why?"
-  },
-  {
-    "speaker": "3",
-    "transcript": "I just wanted to add something I think you're probably gonna, I'm probably gonna have to rewrite some. Yeah, so I would just get"
-  },
-  {
-    "speaker": "2",
-    "transcript": "excited."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I."
-  },
-  {
-    "speaker": "2",
-    "transcript": "OK."
-  },
-  {
-    "speaker": "2",
-    "transcript": "right"
-  },
-  {
-    "speaker": "2",
-    "transcript": "Um"
-  },
-  {
-    "speaker": "3",
-    "transcript": "Yeah, my, um, I said, my knees are prompts. Will they be shown in it or are you gonna do something there yourself. So that's what I'm working on."
-  },
-  {
-    "speaker": "2",
-    "transcript": "No, no, they don't worry about it's, uh, what we're basically doing is just a graph, uh OK. So because I'm not not how this getting used. How you your accommodation for. OK."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Um"
-  },
-  {
-    "speaker": "5",
+    "speaker": "1",
     "transcript": "I"
   },
   {
-    "speaker": "0",
-    "transcript": "um"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "right."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Yeah."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "no"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "OK"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "OK."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "OK."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "3",
-    "transcript": "So we um medicine."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Um, and you."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "You."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Is this the thing."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "3",
-    "transcript": "Uh, I will text. not able to go around it."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Um, yeah, from this one you can just use like uh to"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "to in the same line but two eggs."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Excuse me, I mean, I actually, I actually want to write like speech agendas using insert command and this is used. 00, is in this restaurant some text. Uh, which one?"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "5",
-    "transcript": "Is it for the arrows? Yeah, yeah, yeah, I mean, I want right here as uh."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "search uh queries, and I wanna write this as um it's done for 10,000 of those you think it would be better to simply do the like one line to, I think, I think 1920s and then you just been writing the writing API first, yeah, yeah, it looks good simulations of it, um, but if you want to see, you could just"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "3",
-    "transcript": "say that 10,000 top and see your discs, right, um"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "3",
-    "transcript": "here and return."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "3",
-    "transcript": "you find the price. So I'm gonna overthought that you have one, but it doesn't make sense because the average price is so different to act presidency."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Um, but if you change um in our insurance or"
+    "speaker": "1",
+    "transcript": "and"
   },
   {
-    "speaker": "3",
-    "transcript": "3 things, 87 or on Sundays 714 over a year, so she would be trained days. 117."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "3",
-    "transcript": "98153, and then say, oh well"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "I think so yeah."
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "So what we can do is take the, the drawing out of this as the the model we have that in the"
+    "speaker": "1",
+    "transcript": "I"
   },
   {
-    "speaker": "2",
-    "transcript": "Yeah, is it a rare? Uh, yeah, in the knees, yeah."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Yeah. I react well."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I just uh."
-  },
-  {
-    "speaker": "2",
-    "transcript": "No."
-  },
-  {
-    "speaker": "2",
-    "transcript": "you want to."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I just, uh, what you want to push."
-  },
-  {
-    "speaker": "2",
-    "transcript": "you get"
-  },
-  {
-    "speaker": "3",
-    "transcript": "you know get up and."
-  },
-  {
-    "speaker": "2",
-    "transcript": "and send."
-  },
-  {
-    "speaker": "2",
-    "transcript": "So let's say you want to talk to"
-  },
-  {
-    "speaker": "2",
-    "transcript": "what are we getting from? Why is there a line for front end text agents."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Penny, we do need to, for example, like send word files to the agent."
-  },
-  {
-    "speaker": "5",
-    "transcript": "Currently it's just a textbook that you can chat with. The thing is, it's not farm works. You mean, you mean the chatbox be something like past the instead of like tell you like we wanna use workout or you can use it for both."
-  },
-  {
-    "speaker": "5",
-    "transcript": "Yeah."
-  },
-  {
-    "speaker": "2",
-    "transcript": "It"
-  },
-  {
-    "speaker": "2",
-    "transcript": "At the moment it's us. Your mind is another line from the text agent to the database."
-  },
-  {
-    "speaker": "5",
-    "transcript": "Yeah that that"
-  },
-  {
-    "speaker": "5",
-    "transcript": "I think we missed it"
-  },
-  {
-    "speaker": "2",
-    "transcript": "we might."
-  },
-  {
-    "speaker": "2",
-    "transcript": "thinking like war."
-  },
-  {
-    "speaker": "4",
-    "transcript": "him."
-  },
-  {
-    "speaker": "2",
-    "transcript": "is"
-  },
-  {
-    "speaker": "2",
-    "transcript": "we"
-  },
-  {
-    "speaker": "2",
-    "transcript": "OK."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Well."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Yeah, no, that's wrong direction."
-  },
-  {
-    "speaker": "2",
-    "transcript": "you need a form where you can stay. No, I didn't know that was, that was something like that."
-  },
-  {
-    "speaker": "4",
-    "transcript": "And we do need more coding about the text agent, right? Yeah."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Or do we need another 8 different?"
-  },
-  {
-    "speaker": "4",
-    "transcript": "or simply a text stage"
-  },
-  {
-    "speaker": "4",
-    "transcript": "I think simply a text agent, um."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Would you have students."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Well"
-  },
-  {
-    "speaker": "2",
-    "transcript": "So should decide."
-  },
-  {
-    "speaker": "4",
-    "transcript": "whether it's a query or for."
-  },
-  {
-    "speaker": "2",
-    "transcript": "Yeah, cause it will be sending everything to the allocation. Yes."
-  },
-  {
-    "speaker": "4",
-    "transcript": "and fun, you know."
-  },
-  {
-    "speaker": "0",
-    "transcript": "It's, uh, if you go"
-  },
-  {
-    "speaker": "0",
-    "transcript": "you go straight and look at the top of all the see all the pressure I had done the things to"
-  },
-  {
-    "speaker": "4",
-    "transcript": "to the allocation agent."
-  },
-  {
-    "speaker": "2",
-    "transcript": "and also ask the text agent like how we prompt uh GPT 5 in the, in the speech agent that if you need to search, you just search and everything of this chat history would be dubbed to the outcome. And so just allocation don't know if the allocation can actually do anything should be like she said that she's gonna use to do it so."
-  },
-  {
-    "speaker": "4",
-    "transcript": "you should be able to foster for tests."
-  },
-  {
-    "speaker": "5",
-    "transcript": "especially away from the command life that's like march was short my life. Oh, that's, uh."
-  },
-  {
-    "speaker": "0",
-    "transcript": "everything. Why is SEC."
-  },
-  {
-    "speaker": "2",
-    "transcript": "I."
-  },
-  {
-    "speaker": "2",
-    "transcript": "because she can go she look for."
-  },
-  {
-    "speaker": "0",
-    "transcript": "get cold, colds and caresthetic er up for me. No, I watch my eyes. I love that and someone else takes change you will like that."
-  },
-  {
-    "speaker": "2",
-    "transcript": "you know."
+    "speaker": "1",
+    "transcript": "I"
   }
 ]
