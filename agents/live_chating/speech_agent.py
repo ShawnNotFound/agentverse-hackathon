@@ -23,6 +23,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, AsyncGenerator, Deque, Dict, Iterable, List, Optional
 
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 try:
     import requests
 except ImportError as exc:  # pragma: no cover - hard failure if dependency missing
@@ -36,7 +41,7 @@ DEFAULT_ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel
 DEFAULT_ELEVENLABS_MODEL_ID = "eleven_multilingual_v2"
 
 DATASET_INSTRUCTION_BLOCK = """
-⚠️ SYSTEM CONTRACT — MANDATORY BEHAVIOR ⚠️
+SYSTEM CONTRACT — MANDATORY BEHAVIOR
 
 You are an agent connected to a knowledge base ("dataset").
 You are *not allowed* to make up or infer facts that are not contained in:
@@ -48,22 +53,18 @@ RULES:
    you MUST first issue a dataset search command.
 2. The command format must be **exactly** one of:
      searching {"label": "<Label>", "property": "<property>", "value": "<value>"}
-     searching {"cypher": "<cypher query>"}
 3. Do not write anything else with the searching command — no extra text, punctuation, or explanation.
 4. Wait for the dataset results before producing any answer.
 5. If the user repeats or clarifies, you may reuse your earlier search results.
 
 EXAMPLES:
+User: What is Lina's working on?
+Assistant: searching {"label": "Person", "property": "name", "value": "Lina"}
 
-User: What is Jack’s project about?
-Assistant: searching {"label": "Project", "property": "owner", "value": "Jack"}
+User: Tell me about Project Orion.
+Assistant: searching {"label": "Project", "property": "id", "value": "project_orion"}
 
-User: Tell me about the MGRW dataset.
-Assistant: searching {"cypher": "MATCH (d:Dataset {name:'MGRW'}) RETURN d"}
-
-User: Who is leading Bioreactor Challenge 2?
-Assistant: searching {"label": "Project", "property": "name", "value": "Bioreactor Challenge 2"}
-
+Do not encapsulate the searching command in quotes "" or code blocks ``` ```.
 Never respond conversationally (“I’m not sure”, “let me check”) before a search.
 If you fail to use `searching {...}` when required, your output is invalid and will be discarded.
 """
@@ -447,11 +448,16 @@ class DatasetClient:
         self.base_url = (config.dataset_base_url or "").rstrip("/")
         self.timeout = config.dataset_timeout
         self.enabled = config.dataset_enabled and bool(self.base_url)
+        if self.enabled:
+            logging.info("Dataset client enabled with base URL: %s", self.base_url)
 
     async def query(self, payload: Dict[str, Any]) -> str:
         if not self.enabled:
+            logging.warning("Dataset search attempted but client is disabled.")
             return "Dataset search is disabled."
         url = f"{self.base_url}/query"
+        
+        logging.info("Sending dataset query to %s with payload: %s", url, json.dumps(payload))
 
         def _request() -> str:
             response = requests.post(
@@ -463,7 +469,9 @@ class DatasetClient:
             response.raise_for_status()
             try:
                 data = response.json()
+                logging.info("Dataset query successful: %s", json.dumps(data, indent=2))
             except ValueError:
+                logging.info("Dataset query returned non-JSON response: %s", response.text)
                 return response.text
             return json.dumps(data, indent=2)
 
@@ -570,14 +578,16 @@ class TranscriptAgent:
             return
 
         search_command: Optional[DatasetSearchCommand] = None
-        if self.dataset_client:
+        if self.dataset_client and self.dataset_client.enabled:
             search_command = self._extract_search_command(response_text)
+            if search_command:
+                logging.info("Extracted dataset search command: %s", search_command.text)
 
         messages_for_followup = list(messages)
         dataset_result: Optional[str] = None
 
-        if search_command:
-            logging.info("%s reply: %s", self.agent_name, search_command.text)
+        if search_command and self.dataset_client:
+            logging.info("%s initiating dataset search: %s", self.agent_name, search_command.text)
             self.history.append(
                 TranscriptSegment(
                     speaker=self.agent_name,
@@ -589,6 +599,8 @@ class TranscriptAgent:
             )
 
             dataset_result = await self.dataset_client.query(search_command.payload)
+            logging.info("Dataset result received: %s", dataset_result[:200] if dataset_result else "None")
+            
             messages_for_followup.append({"role": "assistant", "content": search_command.text})
             messages_for_followup.append(
                 {
@@ -646,17 +658,53 @@ class TranscriptAgent:
     def _extract_search_command(self, text: str) -> Optional[DatasetSearchCommand]:
         if not text:
             return None
+        
+        # First, remove code blocks from the entire text
+        cleaned_text = text.strip()
+        
+        # Handle multi-line code blocks (``` or more backticks)
+        lines = cleaned_text.split('\n')
+        cleaned_lines = []
+        in_code_block = False
+        
+        for line in lines:
+            stripped = line.strip()
+            # Check if line starts with backticks (code block delimiter)
+            if stripped.startswith('```'):
+                in_code_block = not in_code_block
+                continue
+            # Skip language identifiers after opening code blocks
+            if not in_code_block or stripped not in ('json', 'javascript', 'python', ''):
+                cleaned_lines.append(line)
+        
+        # Rejoin the cleaned content
+        cleaned_text = '\n'.join(cleaned_lines).strip()
+        
+        # Also handle inline code blocks (single backticks around entire content)
+        if cleaned_text.startswith('`') and cleaned_text.endswith('`'):
+            cleaned_text = cleaned_text[1:-1].strip()
+        
+        # Now look for the searching prefix
         prefix = "searching"
-        if not text.lower().startswith(prefix):
+        text_lower = cleaned_text.lower().strip()
+        
+        if prefix not in text_lower:
             return None
-        remainder = text[len(prefix) :].strip()
+            
+        # Find the start of the JSON payload
+        start_idx = cleaned_text.lower().find(prefix) + len(prefix)
+        remainder = cleaned_text[start_idx:].strip()
+        
         if not remainder:
+            logging.warning("Search command found but no JSON payload")
             return None
+        
         try:
             payload = json.loads(remainder)
-        except json.JSONDecodeError:
-            logging.warning("Unable to parse dataset search payload: %s", remainder)
+        except json.JSONDecodeError as e:
+            logging.warning("Unable to parse dataset search payload: %s (Error: %s)", remainder, e)
             return None
+            
         if not isinstance(payload, dict):
             logging.warning("Dataset search payload must be an object: %s", remainder)
             return None
