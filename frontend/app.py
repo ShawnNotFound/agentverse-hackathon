@@ -7,6 +7,10 @@ import importlib.util
 from dotenv import load_dotenv
 import streamlit as st
 
+
+from PyPDF2 import PdfReader
+from docx import Document
+
 from google_auth_oauthlib.flow import Flow
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
@@ -292,6 +296,37 @@ elif st.session_state.active_page == "Chat":
 		st.session_state.messages.append({"role": "assistant", "text": assistant_text})
 		_rerun_compat()
 
+
+	uploaded_file = st.file_uploader("Upload a file", type=["pdf", "txt", "docx"])
+
+	def extract_text(file):
+		if file.type == "application/pdf":
+			reader = PdfReader(file)
+			return "\n".join(page.extract_text() for page in reader.pages if page.extract_text())
+		elif file.type == "text/plain":
+			return file.read().decode("utf-8")
+		elif file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+			doc = Document(file)
+			return "\n".join(p.text for p in doc.paragraphs)
+		else:
+			return ""
+
+	if st.button("Send File") and uploaded_file:
+		with st.spinner("Extracting text..."):
+			raw_text = extract_text(uploaded_file)
+			if raw_text:
+				st.subheader("📃 Extracted Text")
+				st.write(raw_text)
+
+				# Save to JSON
+				output = {"filename": uploaded_file.name, "extracted_text": raw_text}
+				with open("file_text_output.json", "w", encoding="utf-8") as f:
+					json.dump(output, f, indent=2)
+				st.success("Text sent to the database")
+			else:
+				st.error("Could not extract text from the uploaded file.")
+
+
 	st.caption(f"Requests are associated with {st.session_state.user.get('email')}")
 
 elif st.session_state.active_page == "Audio":
@@ -309,3 +344,4 @@ elif st.session_state.active_page == "Graph":
 	except Exception as e:
 		st.error(f"Error loading graph viewer: {e}")
 		st.info("Make sure `pages/graph_viewer.py` exists and contains a `main()` function.")
+
