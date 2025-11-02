@@ -6,6 +6,9 @@ from pathlib import Path
 import json
 import tempfile
 import threading
+from dotenv import load_dotenv
+
+load_dotenv()
 
 AUDIO_AGENT_PATH = Path(__file__).parent.parent.parent.parent.joinpath("agents", "audio_agent.py").resolve()
 OUTPUT_JSON = Path("transcripts_dataset.json")

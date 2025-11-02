@@ -4,12 +4,14 @@ import subprocess
 import sys
 from pathlib import Path
 import importlib.util
-
+from dotenv import load_dotenv
 import streamlit as st
 
 from google_auth_oauthlib.flow import Flow
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
+
+load_dotenv()
 
 # Paths and config
 HERE = Path(__file__).parent
@@ -18,7 +20,7 @@ OUTPUT_JSON = Path("text_agent_output.json")
 GRAPH_VIEWER_PATH = HERE.joinpath("agentverse-streamlit-app", "pages", "graph_viewer.py")
 AUDIO_VIEWER_MODULE_PATH = HERE.joinpath("agentverse-streamlit-app", "pages", "audio_viewer.py")
 
-CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
+#CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
 
 SCOPES = [
 	"openid",
@@ -45,7 +47,8 @@ def load_client_config():
 			}
 		}
 
-	# Fallback to reading the client_secrets.json file (for compatibility).
+	# # Fallback to reading the client_secrets.json file (for compatibility).
+
 	if CLIENT_SECRETS_FILE.exists():
 		try:
 			return json.loads(CLIENT_SECRETS_FILE.read_text(encoding="utf-8"))
