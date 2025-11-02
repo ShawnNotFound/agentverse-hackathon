@@ -24,7 +24,7 @@ OUTPUT_JSON = Path("text_agent_output.json")
 GRAPH_VIEWER_PATH = HERE.joinpath("agentverse-streamlit-app", "pages", "graph_viewer.py")
 AUDIO_VIEWER_MODULE_PATH = HERE.joinpath("agentverse-streamlit-app", "pages", "audio_viewer.py")
 
-#CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
+CLIENT_SECRETS_FILE = HERE.joinpath("agentverse-streamlit-app", "client_secrets.json")
 
 SCOPES = [
 	"openid",
