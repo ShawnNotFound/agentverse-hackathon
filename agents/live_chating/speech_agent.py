@@ -182,7 +182,7 @@ class AgentConfig:
         )
 
         transcript_path = Path(
-            os.getenv("TRANSCRIPT_DATASET_PATH", "transcribe/transcripts_dataset.json")
+            os.getenv("TRANSCRIPT_DATASET_PATH", "../frontend/transcripts_dataset.json")
         )
         poll_interval = _env_float("TRANSCRIPT_POLL_INTERVAL", 1.0)
         history_size = _env_int("AGENT_HISTORY_SIZE", 24)
@@ -557,6 +557,38 @@ class TranscriptAgent:
         except asyncio.CancelledError:
             logging.debug("Deferred response cancelled before execution.")
 
+    def _persist_agent_response(self, response_text: str) -> None:
+        """Write the agent's response to the transcript dataset file."""
+        try:
+            transcript_path = self.config.transcript_path
+            
+            # Read existing transcripts
+            if transcript_path.exists():
+                try:
+                    with open(transcript_path, 'r', encoding='utf-8') as f:
+                        transcripts = json.load(f)
+                    if not isinstance(transcripts, list):
+                        transcripts = []
+                except (json.JSONDecodeError, IOError):
+                    transcripts = []
+            else:
+                transcripts = []
+            
+            # Append agent response
+            transcripts.append({
+                "speaker": self.agent_name,
+                "transcript": response_text
+            })
+            
+            # Write back to file
+            transcript_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(transcript_path, 'w', encoding='utf-8') as f:
+                json.dump(transcripts, f, indent=2, ensure_ascii=False)
+            
+            logging.debug("Persisted agent response to %s", transcript_path)
+        except Exception as exc:
+            logging.error("Failed to persist agent response: %s", exc)
+
     async def _generate_response(self) -> None:
         history_snapshot = list(self.history)
         if not history_snapshot:
@@ -615,6 +647,10 @@ class TranscriptAgent:
                 return
 
         logging.info("%s reply: %s", self.agent_name, response_text)
+        
+        # Persist the agent's response to the transcript file
+        self._persist_agent_response(response_text)
+        
         self.history.append(
             TranscriptSegment(
                 speaker=self.agent_name,

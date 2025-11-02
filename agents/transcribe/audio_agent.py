@@ -13,7 +13,7 @@ SAMPLE_RATE = 16000
 MEDIA_ENCODING = "pcm"
 
 client = TranscribeStreamingClient(region=AWS_REGION)
-DATASET_PATH = Path("transcripts_dataset.json")
+DATASET_PATH = Path(__file__).parent.parent.parent / "frontend" / "transcripts_dataset.json"
 TRANSCRIPT_DATA = []
 
 
@@ -30,6 +30,7 @@ def load_existing_dataset():
 def persist_dataset():
     """Write the accumulated transcript data to disk."""
     try:
+        DATASET_PATH.parent.mkdir(parents=True, exist_ok=True)
         DATASET_PATH.write_text(json.dumps(TRANSCRIPT_DATA, indent=2), encoding="utf-8")
     except OSError as exc:
         print(f"⚠️ Unable to write dataset: {exc}")
