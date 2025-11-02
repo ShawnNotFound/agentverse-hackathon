@@ -322,7 +322,7 @@ elif st.session_state.active_page == "Chat":
 				output = {"filename": uploaded_file.name, "extracted_text": raw_text}
 				with open("file_text_output.json", "w", encoding="utf-8") as f:
 					json.dump(output, f, indent=2)
-				st.success("Text saved successfully")
+				st.success("Text sent to the database")
 			else:
 				st.error("Could not extract text from the uploaded file.")
 
