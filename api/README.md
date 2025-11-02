@@ -1,27 +1,8 @@
-# Neo4j Flask API
+Neo4j Flask API
 
-A simple Flask API to interact with a Neo4j database. You can push graph data, query nodes, and clear the database.
+This is a Flask-based API to interact with a Neo4j database. It allows you to push graph data, query the database, and clear all data from the Neo4j instance. The API is built to interact with Neo4j via HTTP requests.
 
-## How to Run
-
-1. **Install dependencies:**
-   ```
-   pip install -r requirements.txt
-   ```
-
-2. **Set up your `.env` file:**
-   ```
-   NEO4J_USER=GET FROM ME
-   NEO4J_PASSWORD=GET FROM ME
-   ```
-
-3. **Start the API:**
-   ```
-   python neo4j_api.py
-   ```
-   The server will run at `http://localhost:8080`.
-
-## Table of Contents
+Table of Contents
 
 - Base URL
 - Authentication
@@ -35,7 +16,7 @@ A simple Flask API to interact with a Neo4j database. You can push graph data, q
 
 ---
 
-## Base URL
+Base URL
 
 http://<your-server-ip>:8080
 
@@ -43,7 +24,7 @@ Replace <your-server-ip> with the actual IP address or hostname of the server wh
 
 ---
 
-## Authentication
+Authentication
 
 The API uses environment variables to configure the connection to the Neo4j database:
 
@@ -55,7 +36,7 @@ These values must be set in your environment for the API to connect to Neo4j. Th
 
 ---
 
-## Endpoints
+Endpoints
 
 1. Home
 
@@ -239,17 +220,14 @@ If there’s an error:
 
 ---
 
-## Example Requests
+Example Requests
 
 Here’s how you might interact with the API using curl from the command line.
 
-**Health Check**
-```
+Health Check
 curl http://localhost:8080/health
-```
 
-**Push Graph Data**
-```
+Push Graph Data
 curl -X POST http://localhost:8080/push -H "Content-Type: application/json" -d '{
     "nodes": [
         {"id": "1", "label": "Person", "properties": {"name": "John", "age": 30}},
@@ -259,25 +237,20 @@ curl -X POST http://localhost:8080/push -H "Content-Type: application/json" -d '
         {"from": "1", "to": "2", "type": "WORKS_AT", "properties": {"since": 2020}}
     ]
 }'
-```
 
-**Query Graph**
-```
+Query Graph
 curl -X POST http://localhost:8080/query -H "Content-Type: application/json" -d '{
     "label": "Person",
     "property": "name",
     "value": "John"
 }'
-```
 
-**Clear Database**
-```
+Clear Database
 curl -X DELETE http://localhost:8080/clear
-```
 
 ---
 
-## Conclusion
+Conclusion
 
 With these API endpoints, you can easily interact with a Neo4j database, including creating nodes and relationships, querying data, and clearing the database. For any issues, please ensure the correct environment variables are set and the Neo4j database is running and accessible.
 

@@ -1,3 +1,4 @@
-agents/.env
-frontend/.env
+## Ignore local OAuth client secrets and generated outputs
 frontend/agentverse-streamlit-app/client_secrets.json
+text_agent_output.json
+.env

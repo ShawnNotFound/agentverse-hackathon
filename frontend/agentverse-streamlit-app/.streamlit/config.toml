@@ -1,0 +1,23 @@
+[general]
+email = "your_email@example.com"
+# The email address used for Streamlit sharing notifications.
+
+[server]
+headless = true
+# Run the app in headless mode (no browser UI).
+port = 8501
+# The port on which the Streamlit app will run.
+enableCORS = false
+# Disable CORS for local development.
+
+[theme]
+primaryColor = "#1f77b4"
+# The primary color for the app's theme.
+backgroundColor = "#ffffff"
+# The background color for the app.
+secondaryBackgroundColor = "#f0f0f0"
+# The secondary background color for the app.
+textColor = "#000000"
+# The text color for the app.
+font = "sans serif"
+# The font used in the app.
